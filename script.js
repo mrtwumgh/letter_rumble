@@ -3,6 +3,9 @@ const loadingDiv = document.querySelector(".info-bar");
 const ANSWER_LENGTH = 5;
 const ROUNDS = 6;
 
+const themeToggleButton = document.querySelector(".theme-toggle");
+const THEME_STORAGE_KEY = "letter-rumble-theme";
+
 async function init() {
 
     let currentGuess = "";
@@ -165,4 +168,35 @@ function isLetter(letter) {
     return /^[a-zA-Z]$/.test(letter);
 }
 
+function applyTheme(theme) {
+    if (theme === "dark") {
+        document.body.classList.add("dark-theme");
+        themeToggleButton.innerText = "Light Mode";
+        themeToggleButton.setAttribute("aria-pressed", "true");
+    } else {
+        document.body.classList.remove("dark-theme");
+        themeToggleButton.innerText = "Dark Mode";
+        themeToggleButton.setAttribute("aria-pressed", "false");
+    }
+}
+
+function setupThemeToggle() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+
+    if (savedTheme === "dark") {
+        applyTheme("dark");
+    } else {
+        applyTheme("light");
+    }
+
+    themeToggleButton.addEventListener("click", function () {
+        const isDark = document.body.classList.contains("dark-theme");
+        const nextTheme = isDark ? "light" : "dark";
+
+        applyTheme(nextTheme);
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    })
+}
+
+setupThemeToggle();
 init();
