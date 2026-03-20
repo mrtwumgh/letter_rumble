@@ -1,87 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordify</title>
+    <title>Letter Rumble</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <header class="navbar">
-        <h1 class="brand">BitWord</h1>
+    <header class="site-header">
+        <div class="header-inner">
+            <h1 class="brand">Letter Rumble</h1>
+
+            <div class="header-actions">
+                <!-- future theme toggle goes here -->
+            </div>
+        </div>
     </header>
-    <div class="info-bar">
-        <div class="spiral">🌀</div>
-    </div>
-        <div class="scoreboard">
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-            <div class="scoreboard-letter"></div>
-        </div>
-        <div class="keyboard">
-            <div class="key-row">
-                <button class="key">Q</button>
-                <button class="key">W</button>
-                <button class="key">E</button>
-                <button class="key">R</button>
-                <button class="key">T</button>
-                <button class="key">Y</button>
-                <button class="key">U</button>
-                <button class="key">I</button>
-                <button class="key">O</button>
-                <button class="key">P</button>
-            </div>
-            <div class="key-row">
-                <button class="key">A</button>
-                <button class="key">S</button>
-                <button class="key">D</button>
-                <button class="key">F</button>
-                <button class="key">G</button>
-                <button class="key">H</button>
-                <button class="key">J</button>
-                <button class="key">K</button>
-                <button class="key">L</button>
-            </div>
-            <div class="key-row">
-                <button class="key key-big" data-key="Enter">ENTER</button>
-                <button class="key">Z</button>
-                <button class="key">X</button>
-                <button class="key">C</button>
-                <button class="key">V</button>
-                <button class="key">B</button>
-                <button class="key">N</button>
-                <button class="key">M</button>
-                <button class="key key-big" data-key="Backspace"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg></button>
-            </div>
-        </div>
-    </div>
+
+    <main class="page">
+        <section class="game-shell">
+            <section class="game-area" aria-label="Game area">
+                <div class="info-bar">
+                    <div class="spiral">🌀</div>
+                </div>
+
+                <section class="message-panel" aria-live="polite">
+                    <p class="status-message"></p>
+                    <p class="hint-message"></p>
+                    <p class="countdown-message"></p>
+                </section>
+
+                <section class="board-section" aria-label="Word board">
+                    <div class="scoreboard">
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                        <div class="scoreboard-letter"></div>
+                    </div>
+                </section>
+            </section>
+            <section class="keyboard-section" aria-label="On-screen keyboard">
+                <div class="keyboard">
+                    <div class="key-row">
+                        <button class="key">Q</button>
+                        <button class="key">W</button>
+                        <button class="key">E</button>
+                        <button class="key">R</button>
+                        <button class="key">T</button>
+                        <button class="key">Y</button>
+                        <button class="key">U</button>
+                        <button class="key">I</button>
+                        <button class="key">O</button>
+                        <button class="key">P</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key">A</button>
+                        <button class="key">S</button>
+                        <button class="key">D</button>
+                        <button class="key">F</button>
+                        <button class="key">G</button>
+                        <button class="key">H</button>
+                        <button class="key">J</button>
+                        <button class="key">K</button>
+                        <button class="key">L</button>
+                    </div>
+                    <div class="key-row">
+                        <button class="key key-big" data-key="Enter">ENTER</button>
+                        <button class="key">Z</button>
+                        <button class="key">X</button>
+                        <button class="key">C</button>
+                        <button class="key">V</button>
+                        <button class="key">B</button>
+                        <button class="key">N</button>
+                        <button class="key">M</button>
+                        <button class="key key-big" data-key="Backspace" aria-label="Backspace"><svg width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                                <line x1="18" y1="9" x2="12" y2="15"></line>
+                                <line x1="12" y1="9" x2="18" y2="15"></line>
+                            </svg></button>
+                    </div>
+                </div>
+            </section>
+            <section class="future-controls" aria-label="Game controls">
+                <!-- future hint button, instructions button, feedback button -->
+            </section>
+        </section>
+    </main>
+
+    <div class="modal-container" aria-hidden="true"></div>
+
     <script src="script.js"></script>
 </body>
+
 </html>

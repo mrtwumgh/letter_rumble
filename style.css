@@ -1,209 +1,357 @@
+:root {
+  --color-page-bg: hsl(250 100% 98%);
+  --color-text: hsl(245 24% 22%);
+  --color-surface: hsl(0 0% 100% / 0.82);
+  --color-surface-border: hsl(252 42% 89%);
+  --color-panel-bg: hsl(252 100% 97%);
+  --color-panel-border: hsl(252 52% 90%);
+  --color-site-panel: hsl(0 0% 100% / 0.72);
+
+  --color-brand: hsl(258 28% 32%);
+  --color-header-border: hsl(248 43% 88%);
+  --color-status-text: hsl(255 34% 30%);
+  --color-hint-text: hsl(190 45% 32%);
+  --color-countdown-text: hsl(330 42% 38%);
+  --color-tile-text: hsl(245 24% 22%);
+  --color-focus: hsl(196 80% 58%);
+  --color-invalid: hsl(353 83% 62%);
+  --color-key-bg: hsl(252 45% 91%);
+  --color-key-hover: hsl(252 50% 88%);
+  --color-tile-bg: hsl(252 100% 99%);
+  --color-tile-border: hsl(250 34% 85%);
+
+  --color-correct-bg: hsl(141 45% 71%);
+  --color-correct-border: hsl(141 38% 55%);
+  --color-correct-text: hsl(145 35% 18%);
+
+  --color-close-bg: hsl(46 90% 78%);
+  --color-close-border: hsl(42 76% 60%);
+  --color-close-text: hsl(35 45% 24%);
+
+  --color-wrong-bg: hsl(228 16% 76%);
+  --color-wrong-border: hsl(228 14% 60%);
+  --color-wrong-text: hsl(228 20% 24%);
+
+  --radius-large: 1.5rem;
+  --radius-medium: 1rem;
+  --radius-small: 0.9rem;
+
+  --shadow-card:
+    0 12px 30px hsl(250 45% 78% / 0.18), 0 2px 8px hsl(250 30% 70% / 0.12);
+}
+
 * {
   box-sizing: border-box;
 }
 
-body {
-  /* a nice font that uses a user's built in font */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-
-  color: #333;
-  margin: 0;
-  padding: 0;
+html {
+  min-block-size: 100%;
 }
 
-.navbar {
-  border-bottom: 2px solid #333;
-  padding: 15px;
-  text-align: center;
-  margin-bottom: 0;
+body {
+  margin: 0;
+  min-block-size: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-page-bg);
+  color: var(--color-text);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--color-header-border);
+  background-color: var(--color-site-panel);
+  backdrop-filter: blur(8px);
+}
+
+.header-inner {
+  inline-size: min(100% - 2rem, 760px);
+  margin: 0 auto;
+  min-block-size: 4.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .brand {
-  font-size: 30px;
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--color-brand);
 }
 
-.scoreboard {
-  max-width: 295px;
-  width: 100%;
-  margin: 10px auto;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page {
+  inline-size: min(100% - 2rem, 760px);
+  margin: 0 auto;
+  padding: 1.25rem 0 2rem;
+}
+
+.game-shell {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  row-gap: 10px;
-  column-gap: 5px;
+  gap: 1.5rem;
 }
 
-.scoreboard-letter {
-  height: 45px;
-  width: 45px;
-  font-size: 30px;
-  text-transform: uppercase;
-  border: 3px solid #ccc;
-  font-weight: bold;
+.game-area,
+.keyboard-section,
+.future-controls {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card);
+}
+
+.game-area {
+  padding: 1.25rem;
+}
+
+.keyboard-section {
+  padding: 1rem;
+}
+
+.future-controls {
+  min-block-size: 2.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.info-bar {
+  min-block-size: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.correct {
-  background-color: darkgreen;
-  color: white;
-}
-
-.close {
-  background-color: goldenrod;
-  color: white;
-}
-
-.wrong {
-  background-color: #888;
-  color: white; 
-}
-
-.invalid {
-  animation: flash 1s;
-}
-
-/* flashes red border and then fades back to gray */
-@keyframes flash {
-  5% {
-    border-color: crimson;
-  }
-
-  100% {
-    border-color: #ccc;
-  }
-}
-
 .spiral {
-  font-size: 40px;
+  font-size: 2rem;
   animation: spin 1.5s linear infinite;
 }
 
-/* rotates clockwise indefinitely */
+.hidden {
+  visibility: hidden;
+}
+
+.message-panel {
+  min-block-size: 4.5rem;
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-medium);
+  background-color: var(--color-panel-bg);
+  border: 1px solid var(--color-panel-border);
+}
+
+.status-message,
+.hint-message,
+.countdown-message {
+  margin: 0;
+  min-block-size: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.status-message {
+  color: var(--color-status-text);
+}
+
+.hint-message {
+  color: var(--color-hint-text);
+}
+
+.countdown-message {
+  color: var(--color-countdown-text);
+}
+
+.board-section {
+  display: flex;
+  justify-content: center;
+}
+
+.scoreboard {
+  inline-size: 100%;
+  max-inline-size: 320px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.scoreboard-letter {
+  aspect-ratio: 1 / 1;
+  inline-size: 100%;
+  border: 2px solid var(--color-tile-border);
+  border-radius: var(--radius-medium);
+  background-color: var(--color-tile-bg);
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-tile-text);
+  box-shadow: inset 0 -2px 0 hsl(250 33% 92%);
+}
+
+.correct {
+  background-color: var(--color-correct-bg);
+  border-color: var(--color-correct-border);
+  color: var(--color-correct-text);
+}
+
+.close {
+  background-color: var(--color-close-bg);
+  border-color: var(--color-close-border);
+  color: var(--color-close-text);
+}
+
+.wrong {
+  background-color: var(--color-wrong-bg);
+  border-color: var(--color-wrong-border);
+  color: var(--color-wrong-text);
+}
+
+.invalid {
+  animation: flash 0.6s;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  inline-size: 100%;
+  max-inline-size: 520px;
+  margin: 0 auto;
+}
+
+.key-row {
+  display: flex;
+  inline-size: 100%;
+  gap: 0.35rem;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.key {
+  flex: 1;
+  min-block-size: 3.5rem;
+  border: 0;
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--color-key-bg);
+  color: var(--color-text);
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow:
+    inset 0 -2px 0 hsl(250 34% 84%),
+    0 1px 2px hsl(250 20% 70% / 0.15);
+}
+
+.key-big {
+  flex: 1.5;
+  font-size: 0.78rem;
+}
+
+.key:hover {
+  background-color: var(--color-key-hover);
+}
+
+.key:active {
+  transform: translateY(1px);
+}
+
+.key:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.key.correct {
+  background-color: var(--color-correct-bg);
+  color: var(--color-correct-text);
+}
+
+.key.close {
+  background-color: var(--color-close-bg);
+  color: var(--color-close-text);
+}
+
+.key.wrong {
+  background-color: var(--color-wrong-bg);
+  color: var(--color-wrong-text);
+}
+
+.modal-container {
+  display: none;
+}
+
+@keyframes flash {
+  5% {
+    border-color: var(--color-invalid);
+  }
+
+  100% {
+    border-color: var(--color-tile-border);
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* visibility hidden means the item is still there and taking up space
-   but just not shown. display: none doesn't take up space */
-.hidden {
-  visibility: hidden;
-}
-
-.info-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.keyboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
-  padding: 0 8px;
-  width: 100%;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.key-row {
-  display: flex;
-  width: 100%;
-  margin-bottom: 8px;
-  justify-content: center;
-  touch-action: manipulation;
-}
-
-.key {
-  font-family: inherit;
-  font-weight: bold;
-  border: 0;
-  padding: 0;
-  margin: 0 3px;
-  height: 58px;
-  border-radius: 4px;
-  cursor: pointer;
-  user-select: none;
-  background-color: #d3d6da;
-  color: black;
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-transform: uppercase;
-}
-
-.key-big {
-  flex: 1.5;
-  font-size: 12px;
-}
-
-.key:active {
-  background-color: #bbb;
-}
-
-.key.correct {
-  background-color: darkgreen;
-  color: white;
-}
-
-.key.close {
-  background-color: goldenrod;
-  color: white;
-}
-
-.key.wrong {
-  background-color: #787c7e;
-  color: white;
-}
-
-
-/* winner animation */
-
-@keyframes rainbow {
-  100%,
-  0% {
-    color: rgb(255, 0, 0);
+@media (max-width: 560px) {
+  .page {
+    inline-size: min(100% - 1rem, 760px);
+    padding-top: 1rem;
   }
-  8% {
-    color: rgb(255, 127, 0);
-  }
-  16% {
-    color: rgb(255, 255, 0);
-  }
-  25% {
-    color: rgb(127, 255, 0);
-  }
-  33% {
-    color: rgb(0, 255, 0);
-  }
-  41% {
-    color: rgb(0, 255, 127);
-  }
-  50% {
-    color: rgb(0, 255, 255);
-  }
-  58% {
-    color: rgb(0, 127, 255);
-  }
-  66% {
-    color: rgb(0, 0, 255);
-  }
-  75% {
-    color: rgb(127, 0, 255);
-  }
-  83% {
-    color: rgb(255, 0, 255);
-  }
-  91% {
-    color: rgb(255, 0, 127);
-  }
-}
 
-.winner {
-  animation: rainbow 4s infinite linear;
+  .header-inner {
+    inline-size: min(100% - 1rem, 760px);
+    min-block-size: 4.25rem;
+  }
+
+  .game-area,
+  .keyboard-section,
+  .future-controls {
+    border-radius: 1.1rem;
+  }
+
+  .game-area {
+    padding: 1rem;
+  }
+
+  .keyboard-section {
+    padding: 0.85rem;
+  }
+
+  .scoreboard {
+    max-inline-size: 300px;
+    gap: 0.45rem;
+  }
+
+  .scoreboard-letter {
+    font-size: 1.6rem;
+    border-radius: 0.85rem;
+  }
+
+  .key {
+    min-block-size: 3.2rem;
+    border-radius: 0.8rem;
+    font-size: 0.95rem;
+  }
 }
