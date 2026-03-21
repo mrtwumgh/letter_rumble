@@ -6,6 +6,12 @@ const ROUNDS = 6;
 const themeToggleButton = document.querySelector(".theme-toggle");
 const THEME_STORAGE_KEY = "letter-rumble-theme";
 
+const instructionsButton = document.querySelector(".instructions-button");
+const modalContainer = document.querySelector(".modal-container");
+const modalCloseButton = document.querySelector(".modal-close-button");
+const modalCloseAction = document.querySelector(".modal-close-action");
+const modalBackdrop = document.querySelector(".modal-backdrop");
+
 async function init() {
   let currentGuess = "";
   let currentRow = 0;
@@ -197,8 +203,41 @@ function setupThemeToggle() {
   });
 }
 
+function openInstructionsModal() {
+  modalContainer.classList.add("open");
+  modalContainer.setAttribute("aria-hidden", "false");
+}
+
+function closeInstructionsModal() {
+  modalContainer.classList.remove("open");
+  modalContainer.setAttribute("aria-hidden", "true");
+}
+
+function setupInstructionsModal() {
+  instructionsButton.addEventListener("click", openInstructionsModal);
+  modalCloseButton.addEventListener("click", closeInstructionsModal);
+  modalCloseAction.addEventListener("click", closeInstructionsModal);
+  modalBackdrop.addEventListener("click", closeInstructionsModal);
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeInstructionsModal();
+    }
+  });
+}
+
 if (themeToggleButton) {
   setupThemeToggle();
+}
+
+if (
+  instructionsButton &&
+  modalContainer &&
+  modalCloseButton &&
+  modalCloseAction &&
+  modalBackdrop
+) {
+  setupInstructionsModal();
 }
 
 init();
