@@ -12,11 +12,14 @@ const modalCloseButton = document.querySelector(".modal-close-button");
 const modalCloseAction = document.querySelector(".modal-close-action");
 const modalBackdrop = document.querySelector(".modal-backdrop");
 
+const keyButtons = document.querySelectorAll(".key");
+
 async function init() {
   let currentGuess = "";
   let currentRow = 0;
   let done = false;
   let isLoading = false;
+  const keyStatuses = {};
 
   const res = await fetch("https://words.dev-apis.com/word-of-the-day");
   const resObj = await res.json();
@@ -63,6 +66,7 @@ async function init() {
       if (wordParts[i] === guessParts[i]) {
         letters[ANSWER_LENGTH * currentRow + i].classList.add("correct");
         map[guessParts[i]]--;
+        updateKeyStatus(guessParts[i], "correct");
       }
     }
 
@@ -72,8 +76,10 @@ async function init() {
       } else if (wordParts.includes(guessParts[i]) && map[guessParts[i]] > 0) {
         letters[ANSWER_LENGTH * currentRow + i].classList.add("close");
         map[guessParts[i]]--;
+        updateKeyStatus(guessParts[i], "close");
       } else {
         letters[ANSWER_LENGTH * currentRow + i].classList.add("wrong");
+        updateKeyStatus(guessParts[i], "wrong");
       }
     }
 
@@ -102,6 +108,34 @@ async function init() {
       setTimeout(function () {
         letters[ANSWER_LENGTH * currentRow + i].classList.add("invalid");
       }, 10);
+    }
+  }
+
+  function updateKeyStatus(letter, nextStatus) {
+    const currentStatus = keyStatuses[letter];
+
+    if (currentStatus === "correct") {
+      return;
+    }
+
+    if (currentStatus === "close" && nextStatus === "wrong") {
+      return;
+    }
+
+    keyStatuses[letter] = nextStatus;
+    paintKeyboardKey(letter, keyStatuses[letter]);
+  }
+
+  function paintKeyboardKey(letter, status) {
+    for (let i = 0; i < keyButtons.length; i++) {
+      const keyButton = keyButtons[i];
+      const keyValue = keyButton.dataset.key || keyButton.textContent.trim();
+
+      if (keyValue.toUpperCase() === letter) {
+        keyButton.classList.remove("correct", "close", "wrong");
+        keyButton.classList.add(status);
+        return;
+      }
     }
   }
 
