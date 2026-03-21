@@ -16,6 +16,9 @@ const keyButtons = document.querySelectorAll(".key");
 const statusMessage = document.querySelector(".status-message");
 const GAME_STATE_STORAGE_KEY = "letter-rumble-daily-state";
 
+const countdownMessage = document.querySelector(".countdown-message");
+let countdownIntervalId = null;
+
 async function init() {
   let currentGuess = "";
   let currentRow = 0;
@@ -36,10 +39,12 @@ async function init() {
   if (savedState && savedState.date === getTodayKey()) {
     done = true;
     showCompletedGameMessage(savedState);
+    startCountdown();
     return;
   }
 
   statusMessage.textContent = "Guess the hidden five-letter word.";
+  countdownMessage.textContent = "";
 
   function addLetter(letter) {
     if (currentGuess.length < ANSWER_LENGTH) {
@@ -102,12 +107,14 @@ async function init() {
       alert("You Win");
       saveDailyGameState("win", word);
       statusMessage.textContent = "You solved today's puzzle.";
+      startCountdown();
       done = true;
       return;
     } else if (currentRow === ROUNDS) {
       alert(`You lose! The word was ${word}`);
       saveDailyGameState("loss", word);
       statusMessage.textContent = `You finished today's puzzle. The word was ${word}.`;
+      startCountdown();
       done = true;
       return;
     }
@@ -266,7 +273,12 @@ function closeInstructionsModal() {
 }
 
 function getTodayKey() {
-  return new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function saveDailyGameState(result, answer) {
@@ -307,6 +319,50 @@ function showCompletedGameMessage(savedState) {
   } else {
     statusMessage.textContent = `You already completed today's puzzle. The word was ${savedState.answer}.`;
   }
+}
+
+function getNextMidnight() {
+  const now = new Date();
+  const nextMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0,
+    0
+  );
+
+  return nextMidnight;
+}
+
+function formatCountdown(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+function updateCountdownDisplay() {
+  const now = new Date();
+  const nextMidnight = getNextMidnight();
+  const timeRemaining = nextMidnight - now;
+
+  countdownMessage.textContent = `Next word in ${formatCountdown(timeRemaining)}`;
+}
+
+function startCountdown() {
+  updateCountdownDisplay();
+
+  if (countdownIntervalId) {
+    clearInterval(countdownIntervalId);
+  }
+
+  countdownIntervalId = setInterval(function () {
+    updateCountdownDisplay();
+  }, 1000);
 }
 
 function setupInstructionsModal() {
