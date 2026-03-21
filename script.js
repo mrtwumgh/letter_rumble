@@ -22,6 +22,19 @@ let countdownIntervalId = null;
 const hintMessage = document.querySelector(".hint-message");
 const hintButton = document.querySelector(".hint-button");
 
+const feedbackButton = document.querySelector(".feedback-button");
+const feedbackModalContainer = document.querySelector(
+  ".feedback-modal-container",
+);
+const feedbackCloseButton = document.querySelector(".feedback-close-button");
+const feedbackForm = document.querySelector(".feedback-form");
+const feedbackStatusMessage = document.querySelector(
+  ".feedback-status-message",
+);
+
+const feedbackBackdrop =
+  feedbackModalContainer.querySelector(".modal-backdrop");
+
 async function init() {
   let currentGuess = "";
   let currentRow = 0;
@@ -242,9 +255,10 @@ async function init() {
   });
 
   document.addEventListener("keydown", function handleKeyPress(event) {
-    if (done || isLoading) {
+    if (done || isLoading || shouldIgnoreGameKeyboardInput()) {
       return;
     }
+
     const action = event.key;
     handleInput(action);
   });
@@ -347,6 +361,68 @@ function openInstructionsModal() {
 function closeInstructionsModal() {
   modalContainer.classList.remove("open");
   modalContainer.setAttribute("aria-hidden", "true");
+}
+
+function openFeedbackModal() {
+  feedbackModalContainer.classList.add("open");
+  feedbackModalContainer.setAttribute("aria-hidden", "false");
+}
+
+function closeFeedbackModal() {
+  feedbackModalContainer.classList.remove("open");
+  feedbackModalContainer.setAttribute("aria-hidden", "true");
+}
+
+async function submitFeedbackForm(event) {
+  event.preventDefault();
+
+  const formData = new FormData(feedbackForm);
+
+  feedbackStatusMessage.textContent = "Sending...";
+
+  try {
+    const response = await fetch("https://formspree.io/f/mojkzdbd/", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Feedback request failed");
+    }
+
+    feedbackStatusMessage.textContent = "Thanks! Your feedback was sent.";
+    feedbackForm.reset();
+  } catch (error) {
+    feedbackStatusMessage.textContent =
+      "Sorry, something went wrong. Please try again.";
+  }
+}
+
+function shouldIgnoreGameKeyboardInput() {
+  const activeElement = document.activeElement;
+  const isTypingInForm =
+    activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA";
+
+  const isInstructionsModalOpen = modalContainer.classList.contains("open");
+  const isFeedbackModalOpen = feedbackModalContainer.classList.contains("open");
+
+  return isTypingInForm || isInstructionsModalOpen || isFeedbackModalOpen;
+}
+
+function setupFeedbackModal() {
+  feedbackButton.addEventListener("click", openFeedbackModal);
+  feedbackCloseButton.addEventListener("click", closeFeedbackModal);
+  feedbackBackdrop.addEventListener("click", closeFeedbackModal);
+  feedbackForm.addEventListener("submit", submitFeedbackForm);
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeFeedbackModal();
+    }
+  });
 }
 
 function getTodayKey() {
@@ -470,6 +546,17 @@ if (
   modalBackdrop
 ) {
   setupInstructionsModal();
+}
+
+if (
+  feedbackButton &&
+  feedbackModalContainer &&
+  feedbackCloseButton &&
+  feedbackForm &&
+  feedbackStatusMessage &&
+  feedbackBackdrop
+) {
+  setupFeedbackModal();
 }
 
 init();

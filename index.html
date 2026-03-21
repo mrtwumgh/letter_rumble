@@ -127,6 +127,7 @@
             <section class="future-controls" aria-label="Game controls">
                 <button class="secondary-button instructions-button" type="button">Instructions</button>
                 <button class="secondary-button hint-button" type="button">Hint</button>
+                <button class="secondary-button feedback-button" type="button">Feedback</button>
             </section>
         </section>
     </main>
@@ -163,6 +164,35 @@
             <div class="modal-footer">
                 <button class="secondary-button modal-close-action" type="button">Got it</button>
             </div>
+        </section>
+    </div>
+
+    <div class="feedback-modal-container" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+            <div class="modal-header">
+                <h2 class="modal-title" id="feedback-title">Send feedback</h2>
+                <button class="feedback-close-button" type="button" aria-label="Close feedback form">×</button>
+            </div>
+
+            <form class="feedback-form">
+                <div class="form-field">
+                    <label for="feedback-email">Your email</label>
+                    <input type="email" id="feedback-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="feedback-message">Message</label>
+                    <textarea name="message" id="feedback-message" rows="5" placeholder="Share a bug, idea, or suggestion..." required></textarea>
+                </div>
+
+                <p class="feedback-status-message" aria-live="polite"></p>
+
+                <div class="modal-footer">
+                    <button class="secondary-button feedback-submit-button" type="submit">Send feedback</button>
+                </div>
+            </form>
         </section>
     </div>
 

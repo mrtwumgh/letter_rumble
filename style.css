@@ -568,6 +568,72 @@ body.dark-theme {
   outline-offset: 2px;
 }
 
+.feedback-modal-container {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.feedback-modal-container.open {
+  display: grid;
+}
+
+.feedback-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.form-field label {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.form-field input,
+.form-field textarea {
+  inline-size: 100%;
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-medium);
+  background-color: var(--color-panel-bg);
+  color: var(--color-text);
+  padding: 0.85rem 0.95rem;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-block-size: 8rem;
+}
+
+.form-field input:focus-visible,
+.form-field textarea:focus-visible,
+.feedback-close-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.feedback-close-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+.feedback-status-message {
+  margin: 0;
+  min-block-size: 1.25rem;
+  color: var(--color-status-text);
+}
+
 @keyframes flash {
   5% {
     border-color: var(--color-invalid);
