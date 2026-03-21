@@ -13,6 +13,8 @@ const modalCloseAction = document.querySelector(".modal-close-action");
 const modalBackdrop = document.querySelector(".modal-backdrop");
 
 const keyButtons = document.querySelectorAll(".key");
+const statusMessage = document.querySelector(".status-message");
+const GAME_STATE_STORAGE_KEY = "letter-rumble-daily-state";
 
 async function init() {
   let currentGuess = "";
@@ -26,6 +28,18 @@ async function init() {
   const word = resObj["word"].toUpperCase();
   const wordParts = word.split("");
   setLoading(false);
+
+  clearOldDailyGameState();
+
+  const savedState = loadDailyGameState();
+
+  if (savedState && savedState.date === getTodayKey()) {
+    done = true;
+    showCompletedGameMessage(savedState);
+    return;
+  }
+
+  statusMessage.textContent = "Guess the hidden five-letter word.";
 
   function addLetter(letter) {
     if (currentGuess.length < ANSWER_LENGTH) {
@@ -86,10 +100,14 @@ async function init() {
     currentRow++;
     if (word === currentGuess) {
       alert("You Win");
+      saveDailyGameState("win", word);
+      statusMessage.textContent = "You solved today's puzzle.";
       done = true;
       return;
     } else if (currentRow === ROUNDS) {
       alert(`You lose! The word was ${word}`);
+      saveDailyGameState("loss", word);
+      statusMessage.textContent = `You finished today's puzzle. The word was ${word}.`;
       done = true;
       return;
     }
@@ -245,6 +263,50 @@ function openInstructionsModal() {
 function closeInstructionsModal() {
   modalContainer.classList.remove("open");
   modalContainer.setAttribute("aria-hidden", "true");
+}
+
+function getTodayKey() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function saveDailyGameState(result, answer) {
+  const gameState = {
+    date: getTodayKey(),
+    result: result,
+    answer: answer,
+  };
+
+  localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(gameState));
+}
+
+function loadDailyGameState() {
+  const savedState = localStorage.getItem(GAME_STATE_STORAGE_KEY);
+
+  if (!savedState) {
+    return null;
+  }
+
+  return JSON.parse(savedState);
+}
+
+function clearOldDailyGameState() {
+  const savedState = loadDailyGameState();
+
+  if (!savedState) {
+    return;
+  }
+
+  if (savedState.date !== getTodayKey()) {
+    localStorage.removeItem(GAME_STATE_STORAGE_KEY);
+  }
+}
+
+function showCompletedGameMessage(savedState) {
+  if (savedState.result === "win") {
+    statusMessage.textContent = "You already completed today's puzzle and won.";
+  } else {
+    statusMessage.textContent = `You already completed today's puzzle. The word was ${savedState.answer}.`;
+  }
 }
 
 function setupInstructionsModal() {
