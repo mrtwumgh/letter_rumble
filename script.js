@@ -19,12 +19,16 @@ const GAME_STATE_STORAGE_KEY = "letter-rumble-daily-state";
 const countdownMessage = document.querySelector(".countdown-message");
 let countdownIntervalId = null;
 
+const hintMessage = document.querySelector(".hint-message");
+const hintButton = document.querySelector(".hint-button");
+
 async function init() {
   let currentGuess = "";
   let currentRow = 0;
   let done = false;
   let isLoading = false;
   const keyStatuses = {};
+  let hintUsed = false;
 
   const res = await fetch("https://words.dev-apis.com/word-of-the-day");
   const resObj = await res.json();
@@ -39,12 +43,18 @@ async function init() {
   if (savedState && savedState.date === getTodayKey()) {
     done = true;
     showCompletedGameMessage(savedState);
+    hintMessage.textContent = "";
+    hintButton.disabled = true;
+    hintButton.textContent = "Hint unavailable";
     startCountdown();
     return;
   }
 
   statusMessage.textContent = "Guess the hidden five-letter word.";
   countdownMessage.textContent = "";
+  hintMessage.textContent = "";
+  hintButton.disabled = false;
+  hintButton.textContent = "Hint";
 
   function addLetter(letter) {
     if (currentGuess.length < ANSWER_LENGTH) {
@@ -107,6 +117,8 @@ async function init() {
       alert("You Win");
       saveDailyGameState("win", word);
       statusMessage.textContent = "You solved today's puzzle.";
+      hintButton.disabled = true;
+      hintButton.textContent = "Hint unavailable";
       startCountdown();
       done = true;
       return;
@@ -114,6 +126,8 @@ async function init() {
       alert(`You lose! The word was ${word}`);
       saveDailyGameState("loss", word);
       statusMessage.textContent = `You finished today's puzzle. The word was ${word}.`;
+      hintButton.disabled = true;
+      hintButton.textContent = "Hint unavailable";
       startCountdown();
       done = true;
       return;
@@ -163,6 +177,69 @@ async function init() {
       }
     }
   }
+
+  async function fetchDictionaryHint(word) {
+    const response = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Dictionary request failed");
+    }
+
+    const data = await response.json();
+
+    const firstEntry = data[0];
+    const firstMeaning = firstEntry.meanings?.[0];
+    const firstDefinition = firstMeaning.definitions?.[0]?.definition;
+    const firstSynonym = firstMeaning.synonyms?.[0];
+
+    if (firstDefinition) {
+      return `Hint: ${firstDefinition}`;
+    }
+
+    if (firstSynonym) {
+      return `Hint: A related word is "${firstSynonym}".`;
+    }
+
+    throw new Error("No usable dictionary hint found");
+  }
+
+  function getFallbackHint(word) {
+    const revealIndex = Math.floor(Math.random() * word.length);
+    const revealLetter = word[revealIndex];
+    const position = revealIndex + 1;
+
+    return `Hint: The ${position}${getOrdinalSuffix(position)} letter is ${revealLetter}.`;
+  }
+
+  function getOrdinalSuffix(number) {
+    if (number === 1) return "st";
+    if (number === 2) return "nd";
+    if (number === 3) return "rd";
+    return "th";
+  }
+
+  async function giveHint() {
+    if (done || isLoading || hintUsed) {
+      return;
+    }
+
+    hintUsed = true;
+    hintButton.disabled = true;
+    hintButton.textContent = "Hint used";
+
+    try {
+      const hintText = await fetchDictionaryHint(word);
+      hintMessage.textContent = hintText;
+    } catch (error) {
+      hintMessage.textContent = getFallbackHint(word);
+    }
+  }
+
+  hintButton.addEventListener("click", function () {
+    giveHint();
+  });
 
   document.addEventListener("keydown", function handleKeyPress(event) {
     if (done || isLoading) {
@@ -330,7 +407,7 @@ function getNextMidnight() {
     0,
     0,
     0,
-    0
+    0,
   );
 
   return nextMidnight;
@@ -339,7 +416,10 @@ function getNextMidnight() {
 function formatCountdown(milliseconds) {
   const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
   const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+    2,
+    "0",
+  );
   const seconds = String(totalSeconds % 60).padStart(2, "0");
 
   return `${hours}:${minutes}:${seconds}`;
