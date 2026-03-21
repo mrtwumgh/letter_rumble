@@ -197,5 +197,8 @@ function setupThemeToggle() {
   });
 }
 
-setupThemeToggle();
+if (themeToggleButton) {
+  setupThemeToggle();
+}
+
 init();
