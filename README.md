@@ -1,9 +1,9 @@
 
 ---
 
-# Wordify
+# Letter Rumble
 
-**Wordify** is a browser-based word guessing game inspired by the popular game Wordle. Built with vanilla JavaScript, HTML, and CSS, it challenges players to guess a secret 5-letter word within 6 attempts, providing visual feedback on the accuracy of each letter.
+**Letter Rumble** is a browser-based word guessing game inspired by the popular game Wordle. Built with vanilla JavaScript, HTML, and CSS, it challenges players to guess a secret 5-letter word within 6 attempts, providing visual feedback on the accuracy of each letter.
 
 ## Table of Contents
 
