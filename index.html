@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letter Rumble</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -25,10 +30,6 @@
                     <span class="brand-tagline">Daily word challenge</span>
                 </span>
             </h1>
-
-            <div class="header-actions">
-                <button class="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
-            </div>
         </div>
     </header>
 
@@ -46,38 +47,7 @@
                 </section>
 
                 <section class="board-section" aria-label="Word board">
-                    <div class="scoreboard">
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                        <div class="scoreboard-letter"></div>
-                    </div>
+                    <div class="scoreboard" id="scoreboard"></div>
                 </section>
             </section>
             <section class="keyboard-section" aria-label="On-screen keyboard">
@@ -126,7 +96,9 @@
             </section>
             <section class="future-controls" aria-label="Game controls">
                 <button class="secondary-button instructions-button" type="button">Instructions</button>
-                <button class="secondary-button hint-button" type="button">Hint</button>
+                <button class="secondary-button stats-button" type="button">Stats</button>
+                <button class="secondary-button hint-button" type="button" disabled>Hint (guess 5+)</button>
+                <button class="secondary-button rematch-button" type="button" hidden>Rematch</button>
                 <button class="secondary-button feedback-button" type="button">Feedback</button>
             </section>
         </section>
@@ -152,9 +124,14 @@
 
                 <ul class="instructions-list">
                     <li><strong class="correct-text">Green</strong> means the letter is in the correct position.</li>
-                    <li><strong class="close-text">Yellow</strong> means the letter is in the word but in the wrong position.</li>
+                    <li><strong class="close-text">Yellow</strong> means the letter is in the word but in the wrong
+                        position.</li>
                     <li><strong class="wrong-text">Gray</strong> means the letter is not in the word.</li>
                 </ul>
+
+                <p>
+                    A hint unlocks once you reach your fifth guess, if you need it.
+                </p>
 
                 <p>
                     You can type with your keyboard or use the on-screen keyboard.
@@ -179,12 +156,14 @@
             <form class="feedback-form">
                 <div class="form-field">
                     <label for="feedback-email">Your email</label>
-                    <input type="email" id="feedback-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                    <input type="email" id="feedback-email" name="email" autocomplete="email"
+                        placeholder="you@example.com" required>
                 </div>
 
                 <div class="form-field">
                     <label for="feedback-message">Message</label>
-                    <textarea name="message" id="feedback-message" rows="5" placeholder="Share a bug, idea, or suggestion..." required></textarea>
+                    <textarea name="message" id="feedback-message" rows="5"
+                        placeholder="Share a bug, idea, or suggestion..." required></textarea>
                 </div>
 
                 <p class="feedback-status-message" aria-live="polite"></p>
@@ -196,7 +175,44 @@
         </section>
     </div>
 
-    <script src="script.js"></script>
+    <div class="results-modal-container" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="results-title">
+            <div class="modal-header">
+                <h2 class="modal-title" id="results-title"></h2>
+                <button class="results-close-button" type="button" aria-label="Close result">×</button>
+            </div>
+
+            <div class="modal-body">
+                <p class="results-body"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="secondary-button results-share-button" type="button">Share result</button>
+                <button class="secondary-button results-close-action" type="button">Close</button>
+            </div>
+        </section>
+    </div>
+
+    <div class="stats-modal-container" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+            <div class="modal-header">
+                <h2 class="modal-title" id="stats-title">Your stats</h2>
+                <button class="stats-close-button" type="button" aria-label="Close stats">×</button>
+            </div>
+
+            <div class="modal-body stats-body"></div>
+
+            <div class="modal-footer">
+                <button class="secondary-button stats-close-action" type="button">Close</button>
+            </div>
+        </section>
+    </div>
+
+    <script type="module" src="./main.js"></script>
 </body>
 
 </html>
