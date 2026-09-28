@@ -1,7 +1,7 @@
 import { store, subscribe } from "./store.js";
 import { fetchDictionaryHint } from "./api.js";
 
-const UNLOCK_AT_ROW = 4; // zero-indexed: opens on guess 5, stays open through guess 6
+const UNLOCK_AT_ROW = 3; //
 
 export function initHints(button, messageEl) {
   updateButton(button);

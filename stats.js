@@ -1,7 +1,4 @@
-import { store, subscribe } from "./store.js";
-
 const STATS_STORAGE_KEY = "letter-rumble-stats";
-let alreadyRecorded = false;
 
 export function initStats({
   button,
@@ -29,23 +26,6 @@ export function initStats({
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") close();
   });
-
-  subscribe((property) => {
-    if (property === "done" && !store.done) {
-      alreadyRecorded = false; // a new round just started
-      return;
-    }
-
-    if (
-      (property === "done" || property === "result") &&
-      store.done &&
-      store.mode === "daily" &&
-      !alreadyRecorded
-    ) {
-      recordResult();
-      alreadyRecorded = true;
-    }
-  });
 }
 
 function emptyStats() {
@@ -58,19 +38,20 @@ function emptyStats() {
   };
 }
 
-function recordResult() {
+export function recordWin(guessesUsed) {
   const stats = loadStats();
   stats.played += 1;
+  stats.wins += 1;
+  stats.currentStreak += 1;
+  stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+  stats.guessDistribution[guessesUsed - 1] += 1;
+  saveStats(stats);
+}
 
-  if (store.result === "win") {
-    stats.wins += 1;
-    stats.currentStreak += 1;
-    stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
-    stats.guessDistribution[store.currentRow - 1] += 1;
-  } else {
-    stats.currentStreak = 0;
-  }
-
+export function recordLoss() {
+  const stats = loadStats();
+  stats.played += 1;
+  stats.currentStreak = 0;
   saveStats(stats);
 }
 

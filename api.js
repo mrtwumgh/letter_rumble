@@ -31,26 +31,35 @@ export async function validateWord(word) {
   return data.validWord;
 }
 
+const PART_OF_SPEECH = {
+  n: "noun",
+  v: "verb",
+  adj: "adjective",
+  adv: "adverb",
+};
+
 export async function fetchDictionaryHint(word) {
+  const target = word.toLowerCase();
   const res = await fetch(
-    `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
+    `https://api.datamuse.com/words?sp=${encodeURIComponent(target)}&md=d&max=1`,
+    { signal: AbortSignal.timeout(3000) },
   );
   if (!res.ok) {
     throw new Error("Dictionary request failed");
   }
 
   const data = await res.json();
-  const meaning = data[0]?.meanings?.[0];
-  const definition = meaning?.definitions?.[0]?.definition;
+  const entry = data[0];
 
-  if (definition) {
-    return `Hint: ${definition}`;
+  if (!entry || entry.word.toLowerCase() !== target) {
+    throw new Error("No matching dictionary entry");
   }
 
-  const synonym = meaning?.synonym?.[0];
-  if (synonym) {
-    return `Hint: A related word is "${synonym}".`;
+  const [tag, definition] = (entry.defs?.[0] ?? "").split("\t");
+  if (!definition) {
+    throw new Error("No usable dictionary hint found");
   }
 
-  throw new Error("No usable dictionary hint found");
+  const label = PART_OF_SPEECH[tag];
+  return label ? `Hint (${label}): ${definition}` : `Hint: ${definition}`;
 }

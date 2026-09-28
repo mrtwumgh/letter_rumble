@@ -1,6 +1,7 @@
 import { store } from "./store.js";
 import { fetchWordOfTheDay, fetchRandomWord, validateWord } from "./api.js";
 import { ANSWER_LENGTH, ROUNDS } from "./constants.js";
+import { recordWin, recordLoss } from "./stats.js";
 
 const GAME_STATE_STORAGE_KEY = "letter-rumble-daily-state";
 
@@ -182,46 +183,4 @@ function loadDailyGameState() {
   }
 
   return parsed;
-}
-
-const STATS_STORAGE_KEY = "letter-rumble-stats";
-
-function defaultStats() {
-  return {
-    played: 0,
-    wins: 0,
-    currentStreak: 0,
-    maxStreak: 0,
-    guessDistribution: [0, 0, 0, 0, 0, 0],
-  };
-}
-
-function loadStats() {
-  const saved = localStorage.getItem(STATS_STORAGE_KEY);
-  return saved ? JSON.parse(saved) : defaultStats();
-}
-
-function saveStats(stats) {
-  localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(stats));
-}
-
-function recordWin(guessesUsed) {
-  const stats = loadStats();
-  stats.played += 1;
-  stats.wins += 1;
-  stats.currentStreak += 1;
-  stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
-  stats.guessDistribution[guessesUsed - 1] += 1;
-  saveStats(stats);
-}
-
-function recordLoss() {
-  const stats = loadStats();
-  stats.played += 1;
-  stats.currentStreak = 0;
-  saveStats(stats);
-}
-
-export function getStats() {
-  return loadStats();
 }
