@@ -1,140 +1,107 @@
+# Letter Rumble
 
----
-
-# Wordify
-
-**Wordify** is a browser-based word guessing game inspired by the popular game Wordle. Built with vanilla JavaScript, HTML, and CSS, it challenges players to guess a secret 5-letter word within 6 attempts, providing visual feedback on the accuracy of each letter.
-
-## Table of Contents
-
-* [Features](https://www.google.com/search?q=%23features)
-* [How it Works](https://www.google.com/search?q=%23how-it-works)
-* [Installation & Usage](https://www.google.com/search?q=%23installation--usage)
-* [Game Logic & Architecture](https://www.google.com/search?q=%23game-logic--architecture)
-* [Technologies Used](https://www.google.com/search?q=%23technologies-used)
-* [Project Structure](https://www.google.com/search?q=%23project-structure)
+Letter Rumble is a browser-based, Wordle-style word game built with vanilla JavaScript (ES modules), HTML and CSS. Players get six tries to guess a hidden five-letter word, with colour feedback after every guess. There is a new daily puzzle, a random-word rematch mode, streak tracking and a shareable result grid.
 
 ## Features
 
-* **Daily Word Fetching:** Automatically fetches a "Word of the Day" from an external API.
-* **Input Validation:** Validates if the user's guess is a real English word via API before processing.
-* **Visual Feedback:**
-* **Green:** Correct letter in the correct spot.
-* **Goldenrod:** Correct letter in the wrong spot.
-* **Gray:** Letter not in the word.
+- **Daily puzzle:** the word of the day is fetched from an external API. Once you finish, the game remembers it and shows a countdown to the next word.
+- **Word validation:** every guess is checked against a dictionary API. Invalid words flash the row instead of using up a guess.
+- **Colour feedback:**
+  - Green: correct letter, correct position.
+  - Amber: letter is in the word, wrong position.
+  - Gray: letter is not in the word.
+- **Two input methods:** type on your keyboard or use the on-screen keyboard. Keys are coloured to match what you've learned, and eliminated letters fade into the background.
+- **Hint:** unlocks on your fifth guess, one per round. It shows a dictionary definition of the word, and falls back to revealing one letter and its position if the definition is unavailable or would give the word away.
+- **Rematch:** once a round is over, play a random word as many times as you like. Rematches don't affect your daily state or stats.
+- **Stats:** games played, win percentage, current streak, best streak and a guess-distribution chart. Only daily games count.
+- **Share your result:** copies an emoji grid of your guesses to the clipboard, with a copy-by-hand fallback if the clipboard isn't available.
+- **Feedback form:** send bugs or ideas from inside the game.
+- **Instructions and result modals:** a how-to-play dialog, and a result dialog when a round ends.
 
+## How it works
 
-* **Interactive UI:** Includes loading spinners, **crimson border flashing** for invalid words, and a rainbow victory animation.
-* **Responsive Grid:** Adapts the game board layout for different screen sizes.
+1. **Start-up:** `main.js` renders the board and starts the daily game. If you've already played today, your saved result is restored and the countdown starts. Otherwise the word of the day is fetched.
+2. **Guessing:** type five letters and press `Enter`. The guess is validated through the API.
+3. **Scoring:** valid guesses are scored, tiles and keyboard keys update, and the guess is added to the board.
+4. **Win or loss:** matching the word wins. Using all six guesses without a match is a loss and reveals the word.
+5. **Aftermath:** a daily result is saved for the day and recorded in your stats. The results modal opens, the rematch button appears, and the countdown to the next word starts.
 
-## How it Works
+## Running locally
 
-1. **Initialization:** When the game loads, it fetches a random 5-letter word.
-2. **Guessing:** The player types a 5-letter word and presses `Enter`.
-3. **Validation:** The game checks an API to ensure the guess is a valid dictionary word.
-* *If invalid:* The row borders **flash crimson red** to alert the user.
-* *If valid:* The game compares the guess against the secret word.
-
-
-4. **Scoring:** Tiles flip to reveal colors indicating accuracy.
-5. **Win/Loss:**
-* **Win:** If the word matches exactly, a "You Win!" alert triggers and the title animates with a rainbow effect.
-* **Loss:** After 6 failed attempts, the game reveals the correct word.
-
-
-
-## Installation & Usage
-
-Since this is a static web application, no build process or package manager (npm/yarn) is required.
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/your-username/word-masters.git
-
-```
-
-
-2. **Navigate to the folder:**
-```bash
-cd word-masters
-
-```
-
-
-3. **Run the game:**
-* Simply double-click `index.html` to open it in your default browser.
-* *Note:* For best results with API calls (CORS), it is recommended to run this using a local server (e.g., Live Server in VS Code):
-
+There is no build step and no dependencies, but the project uses ES modules (`<script type="module">`), so **opening `index.html` directly from disk will not work**. Browsers block module loading over `file://`. Serve the folder instead:
 
 ```bash
-# If you have parcel installed
-parcel index.html
-# Then visit localhost:1234
+git clone https://github.com/mrtwumgh/letter_rumble.git
+cd letter_rumble
 
+# any static server works, for example:
+python3 -m http.server 8000
+# or: npx serve
 ```
 
+Then open `http://localhost:8000`. The Live Server extension in VS Code also works.
 
+## Architecture
 
-## Game Logic & Architecture
+The game is split into small modules with one job each, connected through a single shared store.
 
-### Core JavaScript Logic (`word-masters.js`)
+### The store (`store.js`)
 
-The game logic relies heavily on **async/await** for API handling and a **frequency map** algorithm to handle duplicate letters correctly.
+A `Proxy`-wrapped state object plus a `subscribe()` function. Any assignment to the store (for example `store.done = true`) notifies every subscriber with the property name, so UI modules can react to just the changes they care about. Modules read and write the store directly, and never call each other's UI code.
 
-#### 1. The Frequency Map (`makeMap`)
+### Scoring (`game.js`)
 
-To prevent highlighting a letter as "Close" (Yellow) if it has already been accounted for as "Correct" (Green), the game creates a map of the secret word's letter counts.
+Guesses are scored in two passes using a letter-frequency map of the secret word, so duplicate letters are handled correctly:
 
-```javascript
-// Example: If the secret word is "ABBEY"
-// The map looks like: { A: 1, B: 2, E: 1, Y: 1 }
+1. **Pass 1:** mark every exact-position match as `correct` and decrement that letter's count in the map.
+2. **Pass 2:** for the remaining letters, mark `close` only if the letter is in the word and its remaining count is above zero. Everything else is `wrong`.
 
+```js
+// Secret word "ABBEY" -> { A: 1, B: 2, E: 1, Y: 1 }
 ```
 
-#### 2. The Validation Loop
+### Persistence
 
-The grading logic runs in two distinct passes:
+Everything is stored in `localStorage`:
 
-1. **Pass 1 (Green Check):** Identifies all letters that are exactly correct. It decrements the count in the frequency map for those letters.
-2. **Pass 2 (Yellow/Gray Check):** Checks remaining letters. If the letter exists in the word and the map count is greater than 0, it is marked "Close" (Yellow). Otherwise, it is "Wrong" (Gray).
+- `letter-rumble-daily-state`: today's date, result and word, so a finished daily puzzle can't be replayed. It is cleared automatically when the date changes.
+- `letter-rumble-stats`: played, wins, streaks and guess distribution. Reading and writing this key is owned entirely by `stats.js`. `game.js` calls its `recordWin` and `recordLoss` when a daily game ends.
 
-#### 3. State Management
+### Hints (`hints.js`, `api.js`)
 
-* `currentGuess`: Tracks the string currently being typed.
-* `currentRow`: Tracks which of the 6 attempts the user is on.
-* `isLoading`: Prevents input while waiting for API responses.
+The hint button unlocks when `currentRow` reaches the fifth guess. The definition comes from Datamuse with a 3-second timeout. If the request fails, times out, returns no definition, or the definition contains the answer, the game shows a fallback hint that reveals one letter and its position.
 
-### APIs Used
+## APIs used
 
-The application uses the `words.dev-apis.com` endpoints:
+| API | Used for |
+| --- | --- |
+| `words.dev-apis.com` | `GET /word-of-the-day` (daily word), `GET /word-of-the-day?random=1` (rematch word), `POST /validate-word` (guess validation) |
+| `api.datamuse.com` | `GET /words?sp=<word>&md=d&max=1` for the definition used in hints |
+| Formspree | Receives submissions from the feedback form |
 
-* `GET /word-of-the-day`: Retrieves the target word.
-* `POST /validate-word`: Checks if the user's input is a valid English word.
+## Technologies
 
-## Technologies Used
+- **HTML5:** semantic structure and accessible modal dialogs.
+- **CSS3:** custom properties for theming, Grid for the board, Flexbox for layout, keyframe animations for the loading spinner and the invalid-word flash.
+- **JavaScript (ES2020+):** ES modules, `async`/`await`, a Proxy-based reactive store, `localStorage`, the Clipboard API and `AbortSignal.timeout`.
 
-* **HTML5:** Semantic structure and grid layout containers.
-* **CSS3:**
-* **CSS Grid:** Used for the main scoreboard layout.
-* **Keyframes:** Used for the `spin`, `flash`, and `rainbow` animations.
-* **Flexbox:** Used for centering content and navbar alignment.
+## Project structure
 
-
-* **JavaScript (ES6+):**
-* `async`/`await` for fetch requests.
-* DOM manipulation (`querySelector`, `classList`).
-* Event Listeners (`keydown`).
-
-
-
-## Project Structure
-
-```text
+```
 /
-├── index.html          # Main game interface and structure
-├── style.css           # Styling, animations, and responsive design
-└── word-masters.js     # Game logic, API calls, and state management
-
+├── index.html      # Page structure, keyboard and modals
+├── style.css       # Theme, layout, tile/key states, animations, responsive rules
+├── main.js         # Entry point: wires up all modules and starts the daily game
+├── store.js        # Shared reactive state (Proxy) and subscribe()
+├── constants.js    # ANSWER_LENGTH and ROUNDS
+├── game.js         # Round lifecycle, guess submission, scoring, daily-state saving
+├── api.js          # words.dev-apis.com and Datamuse requests
+├── board.js        # Renders the tile grid and the invalid-row flash
+├── keyboard.js     # Physical and on-screen keyboard input, key colouring
+├── hints.js        # Hint button state and hint fetching
+├── modals.js       # Instructions, feedback and results modals
+├── stats.js        # Stats storage (recordWin/recordLoss) and stats modal
+├── share.js        # Builds and copies the shareable emoji grid
+├── rematch.js      # Rematch button visibility and behaviour
+└── countdown.js    # "Next word in ..." countdown to local midnight
 ```
-
----

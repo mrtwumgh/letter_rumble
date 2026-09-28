@@ -116,7 +116,7 @@ function showResult(titleEl, bodyEl) {
     titleEl.textContent = "You got it";
     bodyEl.textContent =
       store.mode === "daily"
-        ? "Nice work — that's today's word solved."
+        ? "Nice work. That's today's word solved."
         : "Nice work on that one.";
   } else {
     titleEl.textContent = "So close";
